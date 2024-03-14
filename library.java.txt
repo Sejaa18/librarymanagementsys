@@ -1,0 +1,67 @@
+import java.util.ArrayList;
+import java.util.List;
+
+class Book {
+    private String title, author, isbn;
+    private boolean available;
+
+    public Book(String title, String author, String isbn) {
+        this.title = title;
+        this.author = author;
+        this.isbn = isbn;
+        this.available = true;
+    }
+
+    public String getTitle() { return title; }
+    public String getAuthor() { return author; }
+    public String getIsbn() { return isbn; }
+    public boolean isAvailable() { return available; }
+    public void setAvailable(boolean available) { this.available = available; }
+}
+
+class Patron {
+    private String name;
+    private int id;
+    public Patron(String name, int id) { this.name = name; this.id = id; }
+    public String getName() { return name; }
+    public int getId() { return id; }
+}
+
+class BorrowingRecord {
+    private Book book;
+    private Patron patron;
+    private long borrowDate, returnDate;
+    public BorrowingRecord(Book book, Patron patron, long borrowDate) { this.book = book; this.patron = patron; this.borrowDate = borrowDate; }
+    public Book getBook() { return book; }
+    public Patron getPatron() { return patron; }
+    public long getBorrowDate() { return borrowDate; }
+    public long getReturnDate() { return returnDate; }
+    public void setReturnDate(long returnDate) { this.returnDate = returnDate; }
+}
+
+class Library {
+    public List<Book> books = new ArrayList<>();
+    public List<Patron> patrons = new ArrayList<>();
+    public List<BorrowingRecord> borrowingRecords = new ArrayList<>();
+
+    public void addBook(Book book) { books.add(book); }
+    public void addPatron(Patron patron) { patrons.add(patron); }
+    public void borrowBook(Book book, Patron patron, long borrowDate) {
+        if (book.isAvailable()) { book.setAvailable(false); borrowingRecords.add(new BorrowingRecord(book, patron, borrowDate)); }
+    }
+    public void returnBook(Book book, long returnDate) {
+        for (BorrowingRecord record : borrowingRecords) { if (record.getBook() == book && record.getReturnDate() == 0) { record.setReturnDate(returnDate); book.setAvailable(true); return; } }
+    }
+}
+
+class LibraryManagementSystem {
+    public static void main(String[] args) {
+        Library library = new Library();
+        library.addBook(new Book("Harry Potter", "J.K. Rowling", "9780747532743"));
+        library.addPatron(new Patron("John Smith", 1001));
+        Book harryPotterBook = library.books.get(0);
+        Patron johnSmith = library.patrons.get(0);
+        library.borrowBook(harryPotterBook, johnSmith, System.currentTimeMillis());
+        library.returnBook(harryPotterBook, System.currentTimeMillis());
+    }
+}
